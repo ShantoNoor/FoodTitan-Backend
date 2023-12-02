@@ -50,6 +50,20 @@ app.post("/users", async (req, res) => {
   }
 });
 
+app.post("/foods", async (req, res) => {
+  try {
+    const food = new Food(req.body);
+    const result = await food.save();
+    return res.status(201).send(result);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).send(err.message);
+    } else {
+      return res.status(500).send("Something went wrong");
+    }
+  }
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

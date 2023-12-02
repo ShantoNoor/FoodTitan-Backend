@@ -19,6 +19,11 @@ const foodSchema = new Schema(
       require: true,
       type: Number,
     },
+    order_count: {
+      require: false,
+      type: Number,
+      default: 0,
+    },
     image: {
       require: true,
       type: String,
