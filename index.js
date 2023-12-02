@@ -50,6 +50,18 @@ app.post("/users", async (req, res) => {
   }
 });
 
+app.get("/foods", async (req, res) => {
+  try {
+    return res.send(await Food.find(req.query).populate("created_by"));
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).send(err.message);
+    } else {
+      return res.status(500).send("Something went wrong");
+    }
+  }
+});
+
 app.post("/foods", async (req, res) => {
   try {
     const food = new Food(req.body);
