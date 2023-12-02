@@ -3,6 +3,7 @@ import cors from "cors";
 import { config } from "dotenv";
 import mongoose from "mongoose";
 import User from "./models/User.model.js";
+import Food from "./models/Food.model.js";
 
 config({
   path: ".env.local",
