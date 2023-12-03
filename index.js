@@ -52,13 +52,22 @@ app.post("/users", async (req, res) => {
 
 app.get("/foods", async (req, res) => {
   try {
-    const { search, ...query } = req.query;
+    const { search, page, ...query } = req.query;
+    console.log(page)
 
     if (search !== "") {
       query.name = { $regex: new RegExp(search, "i") };
     }
 
-    return res.send(await Food.find(query).populate("created_by"));
+    const result = await Promise.all([
+      Food.find(query)
+        .skip(9 * (page - 1))
+        .limit(9)
+        .populate("created_by"),
+      Food.countDocuments(query),
+    ]);
+
+    return res.send(result);
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).send(err.message);
