@@ -31,10 +31,6 @@ const orderSchema = new Schema(
       require: true,
       type: String,
     },
-    description: {
-      require: true,
-      type: String,
-    },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -108,6 +108,32 @@ app.put("/foods/:_id", async (req, res) => {
   }
 });
 
+app.post("/orders", async (req, res) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const order = new Order(req.body);
+    const food = (await Food.find({ _id: req.body.food_id }))[0];
+    food.quantity = food.quantity - req.body.buying_quantity;
+
+    const result = await Promise.all([order.save(), food.save()]);
+    await session.commitTransaction();
+
+    return res.status(201).send(result);
+  } catch (err) {
+    await session.abortTransaction();
+    if (err.name === "ValidationError") {
+      return res.status(400).send(err.message);
+    } else {
+      return res.status(409).send("User already exists");
+    }
+  } finally {
+    session.endSession();
+  }
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
