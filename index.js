@@ -1,9 +1,10 @@
-import express, { query } from "express";
+import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import mongoose from "mongoose";
 import User from "./models/User.model.js";
 import Food from "./models/Food.model.js";
+import Order from "./models/Order.model.js";
 
 config({
   path: ".env.local",
@@ -53,7 +54,6 @@ app.post("/users", async (req, res) => {
 app.get("/foods", async (req, res) => {
   try {
     const { search, page, ...query } = req.query;
-    console.log(page)
 
     if (search !== "") {
       query.name = { $regex: new RegExp(search, "i") };
