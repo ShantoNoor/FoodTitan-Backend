@@ -117,6 +117,7 @@ app.post("/orders", async (req, res) => {
     const order = new Order(req.body);
     const food = (await Food.find({ _id: req.body.food_id }))[0];
     food.quantity = food.quantity - req.body.buying_quantity;
+    food.order_count = food.order_count + 1;
 
     const result = await Promise.all([order.save(), food.save()]);
     await session.commitTransaction();
