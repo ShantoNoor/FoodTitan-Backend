@@ -1,4 +1,4 @@
-import express from "express";
+import express, { query } from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import mongoose from "mongoose";
@@ -52,7 +52,13 @@ app.post("/users", async (req, res) => {
 
 app.get("/foods", async (req, res) => {
   try {
-    return res.send(await Food.find(req.query).populate("created_by"));
+    const { search, ...query } = req.query;
+
+    if (search !== "") {
+      query.name = { $regex: new RegExp(search, "i") };
+    }
+
+    return res.send(await Food.find(query).populate("created_by"));
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).send(err.message);
