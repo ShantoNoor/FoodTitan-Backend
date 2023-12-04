@@ -108,6 +108,20 @@ app.put("/foods/:_id", async (req, res) => {
   }
 });
 
+app.delete("/foods/:_id", async (req, res) => {
+  const { _id } = req.params;
+  try {
+    const result = await Food.deleteOne({ _id: _id });
+    return res.status(200).send(result);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).send(err.message);
+    } else {
+      return res.status(500).send("Something went wrong");
+    }
+  }
+});
+
 app.post("/orders", async (req, res) => {
   const session = await mongoose.startSession();
 
