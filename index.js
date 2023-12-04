@@ -124,7 +124,7 @@ app.delete("/foods/:_id", async (req, res) => {
 
 app.get("/orders", async (req, res) => {
   try {
-    return res.send(await Order.find(req.query).populate('created_by'));
+    return res.send(await Order.find(req.query).populate("created_by"));
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).send(err.message);
@@ -132,7 +132,7 @@ app.get("/orders", async (req, res) => {
       return res.status(500).send("Something went wrong");
     }
   }
-})
+});
 
 app.post("/orders", async (req, res) => {
   const session = await mongoose.startSession();
@@ -166,6 +166,28 @@ app.delete("/orders/:_id", async (req, res) => {
   try {
     const result = await Order.deleteOne({ _id: _id });
     return res.status(200).send(result);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).send(err.message);
+    } else {
+      return res.status(500).send("Something went wrong");
+    }
+  }
+});
+
+app.get("/home", async (req, res) => {
+  try {
+    const top_food = await Food.find().sort({ order_count: -1 }).limit(6);
+    const images = await Food.aggregate([
+      { $sample: { size: 12 } },
+      { $project: { image: 1 } },
+    ]);
+    const total_food_items = await Food.countDocuments();
+    const registered = await User.countDocuments();
+
+    return res
+      .status(200)
+      .send({ top_food, images, total_food_items, registered });
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).send(err.message);
